@@ -13,7 +13,7 @@ client = discord.Client()
 
 
 
-def update_rule(regra):
+def update_rule(regra):       #Função de atualizar a database de regras
   if 'rule' in db.keys():
     rule = db['rule']
     rule.append(regra)
@@ -21,12 +21,12 @@ def update_rule(regra):
   else:
     db['rule'] = [regra]
 
-def delete_rule(delrule):
+def delete_rule(delrule):          #Função de deletar uma regra
   rule = db['rule']
   rule.pop(delrule)
 
 
-def update_virus(viruses):
+def update_virus(viruses):       #Função de atualizar a database de vírus
   if 'virus' in db.keys():
     virus = db['virus']
     virus.append(viruses)
@@ -35,14 +35,14 @@ def update_virus(viruses):
     db['virus'] = [viruses]
 
 
-def delete_virus(deleto):
-  virus = db['virus']
+def delete_virus(deleto):           #Função de deletar um vírus
+  virus = db['virus']          
   virus.pop(deleto)
   
 
-def get_quote():
+def get_quote():                         #Função de pegar uma 'quote' da API do zenquotes
   response = requests.get('https://zenquotes.io/api/random')
-  json_data = json.loads(response.text)
+  json_data = json.loads(response.text) 
   quote = json_data[0]['q'] + ' -' + json_data[0]['a']
   return(quote)
 
@@ -50,18 +50,18 @@ def get_quote():
 
 
 @client.event
-async def on_ready():
+async def on_ready():                    #Quando o bot estiver pronto para ser usado
   print(f'Foi logado como {client.user}')
 
 prefix = '&'
 @client.event
-async def on_message(message):
+async def on_message(message):            #Quando o bot ver uma mensagem
   usuario = str(message.author).split('#')[0]
   msg = message.content
   msgst = str(msg)
   up = msgst.upper()
   
-  if up.startswith(f'{prefix}HELP'):
+  if up.startswith(f'{prefix}HELP'):        #Lista de comandos em forma de embed do discord
     embed=discord.Embed(title="你需要帮助AJUDA你需要帮助BAIDU你需要帮助", description="Prefixo do bot Baidu = &", color=0xff0000)
     embed.set_author(name="你需要帮BAIDU你需要帮助COMPANY你需要帮助", url="https://www.baidu.com/", icon_url="https://images-ext-2.discordapp.net/external/Y87IyQ7tAIw5TwYayCR1_Eev9R5aWW9iSLsKXRGnnKw/%3Fsize%3D1024/https/cdn.discordapp.com/avatars/919634663079837696/93dc79e2b6dd8019fe133a238452a298.webp?width=472&height=472")
     embed.set_thumbnail(url="https://cdn.discordapp.com/attachments/737772651723882546/920841255255175208/baidu-logo-image-sensorstechforum-com.png")
@@ -95,10 +95,7 @@ async def on_message(message):
   if up.startswith('OI'):
     await message.channel.send(f'Oi `{usuario}`!')
   
-  if '@everyone' in msg:
-    await message.channel.send('pare de mandar @everyone, caceta')
-  
-  if up.startswith(f'{prefix}CR7'):
+  if up.startswith(f'{prefix}CR7'): #Manda um de dois gifs do CR7
     gif = random.randint(1, 100)
     if gif > 50:
       await message.channel.send('https://tenor.com/bvsc8.gif')
@@ -106,20 +103,20 @@ async def on_message(message):
       await message.channel.send('https://tenor.com/bHFXt.gif')
    
  
-  if msg.startswith(f'{prefix}pfp'):
+  if msg.startswith(f'{prefix}pfp'):      #Manda a foto de perfil de uma menção no chat
     lista = message.mentions
     for user in lista:
       await message.channel.send(user.avatar_url)
 
-  if up.startswith(f'{prefix}MECI') or message.content.startswith('&MESSI'):
+  if up.startswith(f'{prefix}MECI') or message.content.startswith('&MESSI'):  #Manda um vídeo do ankara messi
     await message.channel.send('https://cdn.discordapp.com/attachments/760497493254864929/919662181170163752/ankara_meci.mp4')
   
  
   
-  if msg.startswith(f'{prefix}inspiração'): 
+  if msg.startswith(f'{prefix}inspiração'):   #Manda uma frase da função get_quote
     await message.channel.send(get_quote())
   
-  if up.startswith(f'{prefix}LER'):
+  if up.startswith(f'{prefix}LER'):           #Lê quantos caracteres e quantas palavras tem em uma frase
     mensagem = len(str(up.strip(f'{prefix}LER ')))
     palavr = up.strip(f'{prefix}LER ')
     palavras = len(palavr.split(' '))
@@ -129,13 +126,13 @@ async def on_message(message):
     else:
       await message.channel.send(f'Essa mensagem tem {mensagem} caracteres (contando com espaços!) e {palavras} palavras')
   
-  if msg.startswith(f'{prefix}novo'):
+  if msg.startswith(f'{prefix}novo'):    #Adiciona um vírus a database
     viruses = msg.split(f'{prefix}novo ', 1)[1]
     update_virus(viruses)
     await message.channel.send('O seu vírus foi adicionado a database.')
     return
  
-  if up.startswith(f'{prefix}DEL'):
+  if up.startswith(f'{prefix}DEL'):       #Deleta um vírus da database
     msg = str(message.content)
     delet = up.split(f'{prefix}DEL ')[1]
     deleto = int(delet) - 1
@@ -143,12 +140,12 @@ async def on_message(message):
     await message.channel.send('O virus foi deletado da database')
   
 
-  for virus in db['virus']:
+  for virus in db['virus']:            #Comando que deleta qualquer mensagem que estiver na database de vírus
     if virus in msg:
       await message.delete()
       await message.channel.send(':rotating_light: A MENSAGEM FOI INDENTIFICADA COMO UM VIRUS E POR ISSO FOI DELETADA!, CUIDADO:rotating_light: ')
   
-  if up.startswith(f'{prefix}VIRUSDB'):
+  if up.startswith(f'{prefix}VIRUSDB'):           #Mostra a database de vírus em forma de embed
     if db['virus'] == []:
       await message.channel.send(f'**A database está vazia, adicione um novo link de vírus com o comando {prefix}novo**')
     else:    embed=discord.Embed(title="DATABASE DE VÍRUS", description="Não clique em nenhum link!", color=0x000000)
@@ -156,19 +153,19 @@ async def on_message(message):
       embed.add_field(name=f'Vírus número: {num + 1}', value=virus, inline=False)
     await message.channel.send(embed = embed)                                     
   
-  if msg.startswith(f'{prefix}novregra'):
-    regra = msg.split('&novregra ', 1)[1]
+  if msg.startswith(f'{prefix}novregra'):         #Faz uma regra nova
+    regra = msg.split(f'{prefix}novregra ', 1)[1]
     update_rule(regra)
     await message.channel.send('Você criou uma nova regra (não oficial) para o servidor!')
   
-  if msg.startswith(f'{prefix}noregra'):
+  if msg.startswith(f'{prefix}noregra'):              #Deleta uma regra
     msg = str(msg)
     bgl = msg.strip(f'{prefix}noregra ')
     delrule = int(bgl) - 1
     delete_rule(delrule)   
     await message.channel.send('A regra foi deletada')
   
-  if up.startswith(f'{prefix}REGRAS'):
+  if up.startswith(f'{prefix}REGRAS'):         #Mostra a lista de regras
     regras = db['rule']
     if regras == []: 
       await message.channel.send('**Não existem regras não oficias no servidor, adicione com o comando &novregra.**')
@@ -178,8 +175,8 @@ async def on_message(message):
       embed.add_field(name=f'Regra número: {num + 1}', value=rule, inline=False)
     await message.channel.send(embed = embed)
 
-  if up == f'{prefix}CLEARREGRA':
-    if str(message.author.id) == '265881043096174594':
+  if up == f'{prefix}CLEARREGRA':                                 #Limpa a database de regras
+    if str(message.author.id) == '':#Aqui fica o id da pessoa que pode utilizar o comando
       db['rule'] = []
       await message.channel.send(':warning: **As regras foram deletadas**:warning: ')
     else:
@@ -191,7 +188,7 @@ async def on_message(message):
     n2 = int(mensagem[2])
     await message.channel.send(f'Aqui está o seu número {random.randint(n1, n2)}')
   
-  if up.startswith(f'{prefix}MOEDA'):
+  if up.startswith(f'{prefix}MOEDA'):     #Gira uma moeda
     moeda = random.randint(1,100)
     if moeda > 50:
       await message.channel.send('**Cara!**')
@@ -200,18 +197,18 @@ async def on_message(message):
   
 
   if f'{prefix}VIRDBDEL' == up:
-    if str(message.author.id) == '265881043096174594':
+    if str(message.author.id) == '': #Aqui fica o id da pessoa que pode utilizar o comando
       db['virus'] = []
       await message.channel.send('A database foi deletada.')
     else:
       await message.channel.send('Você não tem permissão para usar esse comando')
   
-  if msg.startswith(f'{prefix}id'):
+  if msg.startswith(f'{prefix}id'): #Aqui o bot mostra o id de uma menção 
     lista = message.mentions
     for user in lista:
       await message.channel.send(user.id)
   
-  if up.startswith(f'{prefix}SOMA'):
+  if up.startswith(f'{prefix}SOMA'):   #A partir daqui são apenas funções de calculadora
     num = msg.split()
     x = float(num[1])
     y = float(num[2])
